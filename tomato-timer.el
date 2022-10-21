@@ -35,10 +35,44 @@
 
 (require 'notifications)
 
+(defgroup tomato-timer nil
+  "tomato-timer"
+  :prefix "tomato-timer-"
+  :group 'convenience)
+
+(defcustom tomato-timer-dir
+  (file-name-directory (or load-file-name buffer-file-name))
+  "tomato-timer directory which audio files store"
+  :group 'tomato-timer
+  :type 'string)
+
+(defcustom tomato-timer-audio-file-path
+  (convert-standard-filename
+   (expand-file-name "tone.ogg"
+                     tomato-timer-dir))
+  "The alert audio file path"
+  :group 'tomato-timer
+  :type 'string)
+
+(defcustom tomato-timer-mpv-args
+  "--no-config"
+  "The arguments used for mpv"
+  :group 'tomato-timer
+  :type 'string)
+
+(defun tomato-play-alert-sound ()
+  "Play the sound when tomato clock ends"
+  (start-process "tomato-alert"
+                 "*tomato-play-audio-buffer*"
+                 "mpv"
+                 tomato-timer-mpv-args
+                 tomato-timer-audio-file-path))
+
 (defun tomato-send-notification ()
   "When the tomato clock ends, send a notification"
   (notifications-notify :title "Tomato ends"
-                        :body "25 min passed, take a break!"))
+                        :body "25 min passed, take a break!")
+  (tomato-play-alert-sound))
 
 ;;;###autoload
 (defun tomato-timer ()
