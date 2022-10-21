@@ -1,0 +1,17 @@
+* Tomato-timer
+A tomato-timer using pomodoro technique. Use the built-in =notifications= library.
+** Installation
+Download the repository, then
+
+#+begin_src elisp
+(load "/path/to/tomato-timer.el")
+(require 'tomato-timer)
+#+end_src
+
+** Usage
+=M-x Tomato-timer= . This function will start a new tomato timer.
+** Customization
+- =tomato-timer-audio-file-path= : the path of alert audio file.
+- =tomato-timer-mpv-args= : the extra mpv arguments.
+- =tomato-timer-work-time= : the time in minutes for a tomato-timer period.
+

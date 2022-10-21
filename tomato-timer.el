@@ -29,7 +29,37 @@
 
 ;;; Commentary:
 
-;; A simple tomato timer using pomodoro technique
+;; Tomato-timer
+;; ============
+
+;;   A tomato-timer using pomodoro technique. Use the built-in
+;;   `notifications' library.
+
+
+;; Installation
+;; ~~~~~~~~~~~~
+
+;;   Download the repository, then
+
+;;   ,----
+;;   | (load "/path/to/tomato-timer.el")
+;;   | (require 'tomato-timer)
+;;   `----
+
+
+;; Usage
+;; ~~~~~
+
+;;   `M-x Tomato-timer' . This function will start a new tomato timer.
+
+
+;; Customization
+;; ~~~~~~~~~~~~~
+
+;;   - `tomato-timer-audio-file-path' : the path of alert audio file.
+;;   - `tomato-timer-mpv-args' : the extra mpv arguments.
+;;   - `tomato-timer-work-time' : the time in minutes for a tomato-timer
+;;     period.
 
 ;;; Code:
 
@@ -40,11 +70,9 @@
   :prefix "tomato-timer-"
   :group 'convenience)
 
-(defcustom tomato-timer-dir
+(defconst tomato-timer-dir
   (file-name-directory (or load-file-name buffer-file-name))
-  "tomato-timer directory which audio files store"
-  :group 'tomato-timer
-  :type 'string)
+  "tomato-timer directory where audio files store")
 
 (defcustom tomato-timer-audio-file-path
   (convert-standard-filename
@@ -59,6 +87,15 @@
   "The arguments used for mpv"
   :group 'tomato-timer
   :type 'string)
+
+(defcustom tomato-timer-work-time 25
+  "Length of time in minutes for a tomato-timer period"
+  :group 'tomato-timer
+  :type 'integer)
+
+(defun tomato-timer-minutes-to-seconds (minutes)
+  "Convert the minutes time to seconds"
+  (* 60 minutes))
 
 (defun tomato-play-alert-sound ()
   "Play the sound when tomato clock ends"
@@ -79,7 +116,9 @@
   "Set a tomato timer for 25 minutes."
   (interactive)
   (message "Set a tomato timer")
-  (run-with-timer 1500 nil 'tomato-send-notification))
+  (run-with-timer
+   (tomato-timer-minutes-to-seconds tomato-timer-work-time)
+   nil 'tomato-send-notification))
 
 
 (provide 'tomato-timer)
