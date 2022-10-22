@@ -5,7 +5,7 @@
 ;; Author:  qdzhang <qdzhangcn@gmail.com>
 ;; Created: 21 October 2022
 ;; URL: https://github.com/qdzhang/tomato-timer
-;; Version: 0.1
+;; Version: 0.2
 ;; Keywords: timer, pomodoro technique
 ;; Package-Requires: ((emacs "26.1"))
 ;; SPDX-License-Identifier: GPL-3.0-or-later
@@ -52,14 +52,25 @@
 
 ;;   `M-x Tomato-timer' . This function will start a new tomato timer.
 
+;;   Use `list-timers' to show all timer. If you want to close a tomato
+;;   timer, put your point in the entry, press `c' will cancel it.
+
 
 ;; Customization
 ;; ~~~~~~~~~~~~~
 
-;;   - `tomato-timer-audio-file-path' : the path of alert audio file.
-;;   - `tomato-timer-mpv-args' : the extra mpv arguments.
+;;   - `tomato-timer-play-sound-p' : whether play sound when a tomato-timer
+;;     ends. Default is `t' , set to nil to make it silent.
+;;   - `tomato-timer-audio-file-path' : the path of alert audio
+;;     file. Default is the plugin directory.
+;;   - `tomato-timer-audio-player' : the audio player to play the alert
+;;     audio. Default is mpv.
+;;   - `tomato-timer-mpv-args' : the extra mpv arguments. Default is
+;;     `--no-config' in order to avoid conflict with your other fancy mpv
+;;     configurations.
 ;;   - `tomato-timer-work-time' : the time in minutes for a tomato-timer
-;;     period.
+;;     period. Default is 25.
+
 
 ;;; Code:
 
@@ -74,11 +85,22 @@
   (file-name-directory (or load-file-name buffer-file-name))
   "tomato-timer directory where audio files store")
 
+(defcustom tomato-timer-play-sound-p t
+  "Should tomato-timer play sounds when the timer ends.
+Set to nil will make alert silent."
+  :group 'tomato-timer
+  :type 'boolean)
+
 (defcustom tomato-timer-audio-file-path
   (convert-standard-filename
    (expand-file-name "tone.ogg"
                      tomato-timer-dir))
   "The alert audio file path"
+  :group 'tomato-timer
+  :type 'string)
+
+(defcustom tomato-timer-audio-player "mpv"
+  "The audio player used to play the alert sound. Default is mpv."
   :group 'tomato-timer
   :type 'string)
 
@@ -101,7 +123,7 @@
   "Play the sound when tomato clock ends"
   (start-process "tomato-alert"
                  "*tomato-play-audio-buffer*"
-                 "mpv"
+                 tomato-timer-audio-player
                  tomato-timer-mpv-args
                  tomato-timer-audio-file-path))
 
@@ -109,13 +131,14 @@
   "When the tomato clock ends, send a notification"
   (notifications-notify :title "Tomato ends"
                         :body "25 min passed, take a break!")
-  (tomato-play-alert-sound))
+  (when tomato-timer-play-sound-p
+    (tomato-play-alert-sound)))
 
 ;;;###autoload
 (defun tomato-timer ()
   "Set a tomato timer for 25 minutes."
   (interactive)
-  (message "Set a tomato timer")
+  (message "Set a tomato timer for %s minutes." tomato-timer-work-time)
   (run-with-timer
    (tomato-timer-minutes-to-seconds tomato-timer-work-time)
    nil 'tomato-send-notification))

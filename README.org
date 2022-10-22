@@ -10,8 +10,18 @@ Download the repository, then
 
 ** Usage
 =M-x Tomato-timer= . This function will start a new tomato timer.
+
+Use =list-timers= to show all timer. If you want to close a tomato timer, put
+your point in the entry, press =c= will cancel it.
 ** Customization
-- =tomato-timer-audio-file-path= : the path of alert audio file.
-- =tomato-timer-mpv-args= : the extra mpv arguments.
-- =tomato-timer-work-time= : the time in minutes for a tomato-timer period.
+- =tomato-timer-play-sound-p= : whether play sound when a tomato-timer
+  ends. Default is =t= , set to nil to make it silent.
+- =tomato-timer-audio-file-path= : the path of alert audio file. Default is the
+  plugin directory.
+- =tomato-timer-audio-player= : the audio player to play the alert
+  audio. Default is mpv.
+- =tomato-timer-mpv-args= : the extra mpv arguments. Default is =--no-config= in
+  order to avoid conflict with your other fancy mpv configurations.
+- =tomato-timer-work-time= : the time in minutes for a tomato-timer
+  period. Default is 25.
 
