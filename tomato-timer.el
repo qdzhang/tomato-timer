@@ -69,7 +69,16 @@
 ;;     `--no-config' in order to avoid conflict with your other fancy mpv
 ;;     configurations.
 ;;   - `tomato-timer-work-time' : the time in minutes for a tomato-timer
-;;     period. Default is 25.
+;;     period. Default is `25'.
+;;   - `tomato-timer-show-modeline-indicator-p': whether show timer indicator
+;;     in modeline. Default is `t', set `nil' will not show indicator.
+
+
+;; Credit
+;; ~~~~~~
+
+;;   The mode line indicator is modified from syohex's
+;;   [emacs-mode-line-timer]<https://github.com:/syohex/emacs-mode-line-timer>.
 
 
 ;;; Code:
@@ -115,13 +124,18 @@ Set to nil will make alert silent."
   :group 'tomato-timer
   :type 'integer)
 
-(defun tomato-timer-minutes-to-seconds (minutes)
-  "Convert the minutes time to seconds"
-  (* 60 minutes))
+(defcustom tomato-timer-show-modeline-indicator-p t
+  "Whether show timer indicator in modeline."
+  :group 'tomato-timer
+  :type 'boolean)
 
 (defface tomato-timer-modeline-indicator-face
   '((t (:weight bold)))
   "tomato-timer-modeline-face")
+
+(defun tomato-timer-minutes-to-seconds (minutes)
+  "Convert the minutes time to seconds"
+  (* 60 minutes))
 
 (defun tomato-play-alert-sound ()
   "Play the sound when tomato clock ends"
@@ -202,7 +216,8 @@ you want to cancel a tomato-timer. In other scenarios, once the timer
    (tomato-timer-minutes-to-seconds tomato-timer-work-time)
    nil 'tomato-send-notification)
   ;; Show timer in modeline
-  (tomato-timer-show-mode-line-indicator))
+  (when tomato-timer-show-modeline-indicator-p
+    (tomato-timer-show-mode-line-indicator)))
 
 
 (provide 'tomato-timer)
