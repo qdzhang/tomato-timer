@@ -24,4 +24,6 @@ your point in the entry, press =c= will cancel it.
   order to avoid conflict with your other fancy mpv configurations.
 - =tomato-timer-work-time= : the time in minutes for a tomato-timer
   period. Default is 25.
+** Credit
+The mode line indicator is modified from syohex's [[https://github.com:/syohex/emacs-mode-line-timer][emacs-mode-line-timer]].
 
