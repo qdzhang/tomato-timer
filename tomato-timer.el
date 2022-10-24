@@ -72,6 +72,10 @@
 ;;     period. Default is `25'.
 ;;   - `tomato-timer-show-modeline-indicator-p': whether show timer indicator
 ;;     in modeline. Default is `t', set `nil' will not show indicator.
+;;   - `tomato-timer-notification-title' : the title of the
+;;     notification. Default is `Tomato ends' .
+;;   - `tomato-timer-notification-body' : the body of the
+;;     notification. Default is `<NUMBER> min passed, take a break!' .
 
 
 ;; Credit
@@ -129,6 +133,18 @@ Set to nil will make alert silent."
   :group 'tomato-timer
   :type 'boolean)
 
+(defcustom tomato-timer-notification-title "Tomato ends"
+  "The title of notification sent by `tomato-send-notification'."
+  :group 'tomato-timer
+  :type 'string)
+
+(defcustom tomato-timer-notification-body
+  (concat (number-to-string tomato-timer-work-time)
+          " min passed, take a break!")
+  "The body of notification sent by `tomato-send-notification'."
+  :group 'tomato-timer
+  :type 'string)
+
 (defface tomato-timer-modeline-indicator-face
   '((t (:weight bold)))
   "tomato-timer-modeline-face")
@@ -147,8 +163,8 @@ Set to nil will make alert silent."
 
 (defun tomato-send-notification ()
   "When the tomato clock ends, send a notification"
-  (notifications-notify :title "Tomato ends"
-                        :body "25 min passed, take a break!")
+  (notifications-notify :title tomato-timer-notification-title
+                        :body tomato-timer-notification-body)
   (when tomato-timer-play-sound-p
     (tomato-play-alert-sound)))
 
