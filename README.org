@@ -23,5 +23,9 @@ your point in the entry, press =c= will cancel it.
 - =tomato-timer-mpv-args= : the extra mpv arguments. Default is =--no-config= in
   order to avoid conflict with your other fancy mpv configurations.
 - =tomato-timer-work-time= : the time in minutes for a tomato-timer
-  period. Default is 25.
+  period. Default is =25=.
+- =tomato-timer-show-modeline-indicator-p=: whether show timer indicator in
+  modeline. Default is =t=, set =nil= will not show indicator.
+** Credit
+The mode line indicator is modified from syohex's [[https://github.com:/syohex/emacs-mode-line-timer][emacs-mode-line-timer]].
 

@@ -69,7 +69,16 @@
 ;;     `--no-config' in order to avoid conflict with your other fancy mpv
 ;;     configurations.
 ;;   - `tomato-timer-work-time' : the time in minutes for a tomato-timer
-;;     period. Default is 25.
+;;     period. Default is `25'.
+;;   - `tomato-timer-show-modeline-indicator-p': whether show timer indicator
+;;     in modeline. Default is `t', set `nil' will not show indicator.
+
+
+;; Credit
+;; ~~~~~~
+
+;;   The mode line indicator is modified from syohex's
+;;   [emacs-mode-line-timer]<https://github.com:/syohex/emacs-mode-line-timer>.
 
 
 ;;; Code:
@@ -115,6 +124,15 @@ Set to nil will make alert silent."
   :group 'tomato-timer
   :type 'integer)
 
+(defcustom tomato-timer-show-modeline-indicator-p t
+  "Whether show timer indicator in modeline."
+  :group 'tomato-timer
+  :type 'boolean)
+
+(defface tomato-timer-modeline-indicator-face
+  '((t (:weight bold)))
+  "tomato-timer-modeline-face")
+
 (defun tomato-timer-minutes-to-seconds (minutes)
   "Convert the minutes time to seconds"
   (* 60 minutes))
@@ -134,14 +152,72 @@ Set to nil will make alert silent."
   (when tomato-timer-play-sound-p
     (tomato-play-alert-sound)))
 
+(defvar tomato-timer--timer nil)
+(defvar tomato-timer--remainder-seconds 0)
+(defvar tomato-timer--mode-line "")
+
+(defun tomato-timer--set-remainder-second (minutes)
+  (setq tomato-timer--remainder-seconds (tomato-timer-minutes-to-seconds minutes)))
+
+(defun tomato-timer--time-to-string (seconds)
+  (format "%02d:%02d" (/ seconds 60) (mod seconds 60)))
+
+(defun tomato-timer--propertize-mode-line ()
+  (unless (string-empty-p tomato-timer--mode-line)
+    (concat " |"
+            (propertize tomato-timer--mode-line 'face 'tomato-timer-modeline-indicator-face)
+            "| ")))
+
+(defun tomato-timer--set-mode-line ()
+  (setq tomato-timer--mode-line
+        (tomato-timer--time-to-string tomato-timer--remainder-seconds)))
+
+(defun tomato-timer--tick ()
+  "Decrease the remainder seconds."
+  (let ((remainder-seconds (1- tomato-timer--remainder-seconds)))
+    (if (< remainder-seconds 0)
+        (tomato-timer-stop)
+      (cl-decf tomato-timer--remainder-seconds)
+      (tomato-timer--set-mode-line)
+      (tomato-timer--propertize-mode-line)
+      (force-mode-line-update))))
+
+(defun tomato-timer-stop ()
+  "Stop the current `tomato-timer--timer', and restore modeline.
+
+This function should only be used to remove the timer indicator in modeline when
+you want to cancel a tomato-timer. In other scenarios, once the timer
+`tomato-send-notification' ends, this function is invoked automatically."
+  (interactive)
+  (cancel-timer tomato-timer--timer)
+  (setq tomato-timer--timer nil
+        tomato-timer--mode-line "")
+  (setq-default mode-line-format (cdr mode-line-format))
+  (force-mode-line-update))
+
+(defun tomato-timer-show-mode-line-indicator ()
+  "Show current timer indicator in mode line"
+  (tomato-timer--set-remainder-second tomato-timer-work-time)
+  (setq tomato-timer--timer (run-with-timer 0 1 'tomato-timer--tick))
+
+  (unless (member '(:eval (tomato-timer--propertize-mode-line)) mode-line-format)
+    (setq-default mode-line-format
+                  (cons '(:eval (tomato-timer--propertize-mode-line))
+                        mode-line-format))))
+
+
 ;;;###autoload
 (defun tomato-timer ()
   "Set a tomato timer for 25 minutes."
   (interactive)
   (message "Set a tomato timer for %s minutes." tomato-timer-work-time)
+
   (run-with-timer
    (tomato-timer-minutes-to-seconds tomato-timer-work-time)
-   nil 'tomato-send-notification))
+   nil 'tomato-send-notification)
+  ;; Show timer in modeline
+  (when tomato-timer-show-modeline-indicator-p
+    (tomato-timer-show-mode-line-indicator)))
 
 
 (provide 'tomato-timer)
