@@ -30,6 +30,9 @@ your point in the entry, press =c= will cancel it.
   =Tomato ends= .
 - =tomato-timer-notification-body=  : the body of the notification. Default is
   =<NUMBER> min passed, take a break!= .
+- =tomato-timer-mode-line-indicator-delimiter= : the delimiter of the mode line
+  indicator. It is a list contains two string elements, first is the left delimiter,
+  and the second is the right delimiter. Default is ='("" "")= .
 ** Credit
 The mode line indicator is modified from syohex's [[https://github.com:/syohex/emacs-mode-line-timer][emacs-mode-line-timer]].
 

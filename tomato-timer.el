@@ -76,6 +76,10 @@
 ;;     notification. Default is `Tomato ends' .
 ;;   - `tomato-timer-notification-body' : the body of the
 ;;     notification. Default is `<NUMBER> min passed, take a break!' .
+;;   - `tomato-timer-mode-line-indicator-delimiter' : the delimiter of the
+;;     mode line indicator. It is a list contains two string elements, first is
+;;     the left delimiter, and the second is the right delimiter. Default
+;;     is `'("" "")' .
 
 
 ;; Credit
@@ -145,6 +149,13 @@ Set to nil will make alert silent."
   :group 'tomato-timer
   :type 'string)
 
+(defcustom tomato-timer-mode-line-indicator-delimiter '("" "")
+  "The delimiter of tomato-timer mode line indicator.
+This value is a list contains two string, the first element of the list is the
+left delimiter, and the second is the right delimiter."
+  :group 'tomato-timer
+  :type 'string)
+
 (defface tomato-timer-modeline-indicator-face
   '((t (:weight bold)))
   "tomato-timer-modeline-face")
@@ -178,11 +189,18 @@ Set to nil will make alert silent."
 (defun tomato-timer--time-to-string (seconds)
   (format "%02d:%02d" (/ seconds 60) (mod seconds 60)))
 
+(defun tomato-timer-mode-line-indicator-delimiter-left ()
+  (car tomato-timer-mode-line-indicator-delimiter))
+
+(defun tomato-timer-mode-line-indicator-delimiter-right ()
+  (cadr tomato-timer-mode-line-indicator-delimiter))
+
 (defun tomato-timer--propertize-mode-line ()
   (unless (string-empty-p tomato-timer--mode-line)
-    (concat " |"
+    (concat " "
+            (tomato-timer-mode-line-indicator-delimiter-left)
             (propertize tomato-timer--mode-line 'face 'tomato-timer-modeline-indicator-face)
-            "| ")))
+            (tomato-timer-mode-line-indicator-delimiter-right))))
 
 (defun tomato-timer--set-mode-line ()
   (setq tomato-timer--mode-line
