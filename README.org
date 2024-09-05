@@ -1,5 +1,9 @@
 * Tomato-timer
-A tomato-timer using pomodoro technique. Use the built-in =notifications= library.
+A tomato-timer using pomodoro technique. Use the built-in =notifications=
+library.
+
+[[tomato-timer.png]]
+
 ** Installation
 Download the repository, then
 
